@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">To Do</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="upload">Upload</string>
+    <string name="show_details">Show details</string>
+    <string name="enter_your_email_address">Enter your email address</string>
 </resources>
