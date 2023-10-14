@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.todo.databinding.ActivityMainBinding
@@ -82,6 +83,11 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    private fun getFileExtenstion(filUri: Uri) : String?{
+        val contentResolver = contentResolver
+        val mimeType = MimeTypeMap.getSingleton()
+        return mimeType.getExtensionFromMimeType(contentResolver.getType(filUri))
+    }
 
 
 
