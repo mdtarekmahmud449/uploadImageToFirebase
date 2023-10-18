@@ -66,12 +66,41 @@ class MainActivity : AppCompatActivity() {
     private fun uploadFirebase(){
         binding.progressBar.visibility = View.VISIBLE
         val storageReference = FirebaseStorage.getInstance().reference.child("Images").child(uri!!.lastPathSegment!!)
-        storageReference.putFile(uri!!).addOnSuccessListener { uploadTask ->
-            val uriTask = uploadTask.storage.downloadUrl
-            while (!uriTask.isComplete);
-            imageUrl = uriTask.toString()
+        val storeRef = storageReference.child(System.currentTimeMillis().toString() + "." + getFileExtenstion(uri!!))
+        storeRef.putFile(uri!!).addOnSuccessListener { uploadTask ->
+//            val uriTask = uploadTask.storage.downloadUrl
+//            while (!uriTask.isComplete);
+//            imageUrl = uriTask.toString()
 
-            uploadDetails()
+            val userName = binding.nameTextField.text.toString()
+            val userEmail = binding.emailTextField.text.toString()
+            val userPhone = binding.phoneTextField.text.toString()
+
+            storeRef.downloadUrl.addOnSuccessListener {
+                val uriTask = it
+                imageUrl = uriTask.toString()
+
+
+                val uploadDataClass = UploadDataClass(userName, userEmail, userPhone, imageUrl)
+                val currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
+
+
+                val firebaseDatabase = FirebaseDatabase.getInstance().getReference("ToDo Image").child(currentDate)
+                firebaseDatabase.setValue(uploadDataClass).addOnCompleteListener {task ->
+                    if (task.isSuccessful){
+                        Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
+                        binding.imageView.setImageResource(R.drawable.upload)
+                        binding.progressBar.visibility = View.GONE
+                    }
+                }
+                    .addOnFailureListener{
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
+                        binding.imageView.setImageResource(R.drawable.upload)
+                        binding.progressBar.visibility = View.GONE
+                    }
+
+            }
+
             uri = null
             binding.nameTextField.text = null
             binding.emailTextField.text = null
@@ -91,30 +120,6 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    private fun uploadDetails(){
-        val userName = binding.nameTextField.text.toString()
-        val userEmail = binding.emailTextField.text.toString()
-        val userPhone = binding.phoneTextField.text.toString()
-
-
-        val uploadDataClass = UploadDataClass(userName, userEmail, userPhone, imageUrl)
-        val currentDate = DateFormat.getDateTimeInstance().format(Calendar.getInstance().time)
-
-
-        val firebaseDatabase = FirebaseDatabase.getInstance().getReference("ToDo Image").child(currentDate)
-        firebaseDatabase.setValue(uploadDataClass).addOnCompleteListener {task ->
-            if (task.isSuccessful){
-                Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
-                binding.imageView.setImageResource(R.drawable.upload)
-                binding.progressBar.visibility = View.GONE
-            }
-        }
-            .addOnFailureListener{
-                Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
-                binding.imageView.setImageResource(R.drawable.upload)
-                binding.progressBar.visibility = View.GONE
-            }
-    }
 
     private val imagePicker = registerForActivityResult(
         ActivityResultContracts.GetContent()

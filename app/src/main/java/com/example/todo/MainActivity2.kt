@@ -26,7 +26,7 @@ class MainActivity2 : AppCompatActivity() {
 
 
         lists = mutableListOf<UploadDataClass>()
-        adapter = ImageAdapter(this, lists)
+        adapter = ImageAdapter(this@MainActivity2, lists)
         binding.apply {
             recyclerView.layoutManager = GridLayoutManager(this@MainActivity2, 1)
             recyclerView.adapter = adapter
